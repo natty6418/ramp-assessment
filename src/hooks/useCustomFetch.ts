@@ -27,19 +27,6 @@ export function useCustomFetch() {
       }),
     [cache, wrappedRequest]
   )
-
-  const fetchWithoutCache = useCallback(
-    async <TData, TParams extends object = object>(
-      endpoint: RegisteredEndpoints,
-      params?: TParams
-    ): Promise<TData | null> =>
-      wrappedRequest<TData>(async () => {
-        const result = await fakeFetch<TData>(endpoint, params)
-        return result
-      }),
-    [wrappedRequest]
-  )
-
   const clearCache = useCallback(() => {
     if (cache?.current === undefined) {
       return
@@ -47,6 +34,20 @@ export function useCustomFetch() {
 
     cache.current = new Map<string, string>()
   }, [cache])
+  
+  const fetchWithoutCache = useCallback(
+    async <TData, TParams extends object = object>(
+      endpoint: RegisteredEndpoints,
+      params?: TParams
+    ): Promise<TData | null> =>
+      wrappedRequest<TData>(async () => {
+        const result = await fakeFetch<TData>(endpoint, params)
+        clearCache()
+        return result
+      }),
+    [wrappedRequest, clearCache]
+  )
+
 
   const clearCacheByEndpoint = useCallback(
     (endpointsToClear: RegisteredEndpoints[]) => {

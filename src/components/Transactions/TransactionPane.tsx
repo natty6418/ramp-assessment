@@ -29,7 +29,6 @@ export const TransactionPane: TransactionPaneComponent = ({
           })
 
           setApproved((prev)=>{
-            console.log(prev)
             return !prev
           })
         }}
